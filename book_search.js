@@ -27,20 +27,32 @@
         "Results": []
     };
 
-    // Updates the resulting objects SearchTerm
+    
     var wordBreak = "";
     var previousFoundTerm = {};
+
+    // Updates the resulting objects SearchTerm
     result.SearchTerm = searchTerm;
     
+    // Loops through each book
     for(let i = 0; i < scannedTextObj.length; i++) {  
         let book = scannedTextObj[i];
         let contentsInBook = book.Content;
+
+        // Loops through each line within the book
         for(let j = 0; j < contentsInBook.length; j++) {
-            let terms = contentsInBook[j]["Text"];
+            let terms = contentsInBook[j].Text;
+
+            // Concatenates a hyphenated word from the previous line
             terms = wordBreak + terms;
+
+            // Checks to see if the searched term is found 
             if(terms.includes(searchTerm)) {
+
+                // Checks to see if there was a hyphenated word in the previous line 
                 if(wordBreak) {
                     let firstTerm = terms.split(" ")[0];
+                    // Checks to see if the hyphenated word is apart of the searched term to add the previous line's information
                     if(firstTerm.includes(searchTerm)) {
                         result.Results.push(previousFoundTerm);
                     }
@@ -50,8 +62,10 @@
                     "Page": contentsInBook[j].Page,
                     "Line": contentsInBook[j].Line
                 }
+                // Adds the line's information
                 result.Results.push(foundTerm);
             }
+            // Checks to see if there is a hyphenated word break to save the line's information
             if(isHyphenatedWordBreak(terms)) {
                 wordBreak = getLastTerm(terms).replace('-','');
                 previousFoundTerm = {
@@ -60,6 +74,7 @@
                     "Line": contentsInBook[j].Line
                 }
             }
+            // Removes the previous line's information
             else {
                 wordBreak = "";
                 previousFoundTerm = {};
@@ -193,6 +208,7 @@ if (test2result.Results.length == 1) {
     console.log("Received:", test2result.Results.length);
 }
 
+// Checks to see if the function recognizes a hyphenated word break
 const test3result = findSearchTermInBooks("darkness", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut2) === JSON.stringify(test3result)) {
     console.log("PASS: Test 3");
@@ -202,6 +218,7 @@ if (JSON.stringify(twentyLeaguesOut2) === JSON.stringify(test3result)) {
     console.log("Received:", test3result);
 }
 
+// Checks to see if the function returns the right number of results
 const test4result = findSearchTermInBooks("darkness", twentyLeaguesIn); 
 if (test4result.Results.length == 2) {
     console.log("PASS: Test 4");
@@ -211,6 +228,7 @@ if (test4result.Results.length == 2) {
     console.log("Received:", test4result.Results.length);
 }
 
+// Checks to see how the function will treat a word that is not there
 const test5result = findSearchTermInBooks("hello", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut3) === JSON.stringify(test5result)) {
     console.log("PASS: Test 5");
@@ -229,6 +247,7 @@ if (test6result.Results.length == 0) {
     console.log("Received:", test6result.Results.length);
 }
 
+// Checks to see how the function will treat an incorrect spelling of a word there
 const test7result = findSearchTermInBooks("howevr", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut4) === JSON.stringify(test7result)) {
     console.log("PASS: Test 7");
@@ -247,6 +266,7 @@ if (test8result.Results.length == 0) {
     console.log("Received:", test8result.Results.length);
 }
 
+// Checks to see if it can differentiate between "The" and "the"
 const test9result = findSearchTermInBooks("The", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut5) === JSON.stringify(test9result)) {
     console.log("PASS: Test 9");
@@ -265,6 +285,7 @@ if (test10result.Results.length == 1) {
     console.log("Received:", test10result.Results.length);
 }
 
+// Checks to see if it is sensitive to capitalization
 const test11result = findSearchTermInBooks("canadian\'s", twentyLeaguesIn);
 if (JSON.stringify(twentyLeaguesOut6) === JSON.stringify(test11result)) {
     console.log("PASS: Test 11");
